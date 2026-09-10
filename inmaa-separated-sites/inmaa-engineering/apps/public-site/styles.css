@@ -55,6 +55,10 @@ a {
   color: inherit;
 }
 
+.whatsapp-float { position:fixed; z-index:70; inset:auto 20px 20px auto; display:inline-flex; align-items:center; gap:8px; min-height:48px; padding:10px 17px; border:1px solid rgba(255,255,255,.5); border-radius:999px; background:#25d366; color:#07150b; box-shadow:0 12px 28px rgba(0,0,0,.32); font-size:14px; font-weight:800; text-decoration:none; transition:transform 160ms ease,filter 160ms ease; }
+.whatsapp-float span { display:grid; width:24px; height:24px; place-items:center; border:2px solid currentColor; border-radius:50%; font-size:18px; line-height:1; }
+.whatsapp-float:hover,.whatsapp-float:focus-visible { filter:brightness(1.08); transform:translateY(-3px); }
+
 .skip-link {
   position: fixed;
   inset: 12px auto auto 12px;
