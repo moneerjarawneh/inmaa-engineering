@@ -91,7 +91,11 @@
       const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach((node) => { const key = node.nodeValue.replace(/\s+/g, " ").trim(); if (key && Object.prototype.hasOwnProperty.call(overrides, key)) node.nodeValue = node.nodeValue.replace(key, overrides[key]); });
       const phone = String(content?.contactPhone || "").replace(/[\s()-]/g, "");
-      if (phone) document.querySelector("#contentPhoneLink").href = `tel:${phone}`;
+      if (phone) {
+        document.querySelector("#contentPhoneLink").href = `tel:${phone}`;
+        const whatsappNumber = phone.replace(/^\+/, "");
+        document.querySelector("#whatsappLink").href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("مرحبًا، أريد الاستفسار عن خدمات إنماء.")}`;
+      }
     } catch { /* Keep bundled fallback content if unavailable. */ }
   }
 
