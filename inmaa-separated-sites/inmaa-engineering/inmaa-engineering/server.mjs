@@ -17,11 +17,13 @@ import {
   deleteApartment,
   findSession,
   getSiteContent,
+  listAdminBookings,
   listApartments,
   listAreaSuggestions,
   listBookings,
   removeSession,
   updateApartment,
+  updateBookingStatus,
   updateSiteContent,
   upsertUser
 } from "./lib/database.mjs";
@@ -169,6 +171,20 @@ function siteConfig() {
     publicOrigin: process.env.PUBLIC_ORIGIN || "",
     adminOrigin: process.env.ADMIN_ORIGIN || ""
   };
+}
+
+async function notifyBooking(booking, user) {
+  const webhookUrl = String(process.env.BOOKING_WEBHOOK_URL || "").trim();
+  if (!webhookUrl) return;
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: "booking.created", booking, customer: publicUser(user) }),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) console.warn(JSON.stringify({ event: "booking_webhook_failed", status: response.status }));
+  } catch (error) { console.warn(JSON.stringify({ event: "booking_webhook_error", message: error.message })); }
 }
 
 const CONTENT_DEFAULTS = {
@@ -646,6 +662,26 @@ async function handleApi(req, res, pathname) {
     }
   }
 
+  if (pathname === "/api/admin/bookings" && req.method === "GET") {
+    const user = await requireAdmin(req, res);
+    if (!user) return;
+    try { return sendJson(res, 200, { bookings: await listAdminBookings() }); } catch (error) { return sendError(res, error); }
+  }
+
+  const bookingMatch = pathname.match(/^\/api\/admin\/bookings\/([0-9a-f-]{36})$/i);
+  if (bookingMatch && req.method === "PUT") {
+    try {
+      requireCsrf(req);
+      const user = await requireAdmin(req, res);
+      if (!user) return;
+      const status = String((await readJsonBody(req)).status || "");
+      if (!["pending", "confirmed", "completed", "cancelled"].includes(status)) throw new ValidationError("حالة الحجز غير صالحة.");
+      const booking = await updateBookingStatus(bookingMatch[1], status);
+      if (!booking) return sendJson(res, 404, { error: "الحجز غير موجود." });
+      return sendJson(res, 200, { booking });
+    } catch (error) { return sendError(res, error); }
+  }
+
   if (pathname === "/api/admin/apartments" && req.method === "POST") {
     try {
       requireCsrf(req);
@@ -715,6 +751,7 @@ async function handleApi(req, res, pathname) {
       if (appointmentAt && Number.isNaN(appointmentAt.getTime())) throw new ValidationError("اختر موعدًا صالحًا للاستشارة.", "appointmentAt");
       const reference = makeReference();
       const booking = await createBooking({ reference, userId: user.id, appointmentAt, note, project: estimate.project, estimate });
+      void notifyBooking(booking, user);
       return sendJson(res, 201, {
         reference,
         createdAt: booking.created_at,

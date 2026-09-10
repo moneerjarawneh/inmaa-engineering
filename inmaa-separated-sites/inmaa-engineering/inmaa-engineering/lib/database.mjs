@@ -49,6 +49,7 @@ async function pool() {
           created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
         CREATE INDEX IF NOT EXISTS bookings_user_created_idx ON bookings(user_id, created_at DESC);
+        CREATE INDEX IF NOT EXISTS bookings_status_created_idx ON bookings(status, created_at DESC);
         CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions(expires_at);
         CREATE TABLE IF NOT EXISTS areas (
           id UUID PRIMARY KEY,
@@ -171,6 +172,28 @@ export async function listBookings(userId) {
     [userId]
   );
   return rows;
+}
+
+export async function listAdminBookings({ limit = 50 } = {}) {
+  const db = await pool();
+  const { rows } = await db.query(
+    `SELECT b.id, b.reference, b.appointment_at, b.note, b.project, b.estimate, b.status, b.created_at,
+            u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
+       FROM bookings b JOIN users u ON u.id = b.user_id
+      ORDER BY b.created_at DESC LIMIT $1`,
+    [Math.min(Math.max(Number(limit) || 50, 1), 100)]
+  );
+  return rows;
+}
+
+export async function updateBookingStatus(id, status) {
+  const db = await pool();
+  const { rows } = await db.query(
+    `UPDATE bookings SET status = $2 WHERE id = $1
+     RETURNING id, reference, status, appointment_at, created_at`,
+    [id, status]
+  );
+  return rows[0] || null;
 }
 
 function normalizedArea(name) {
