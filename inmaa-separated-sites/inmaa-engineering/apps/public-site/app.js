@@ -80,6 +80,21 @@
   let apartmentCursor = null;
   let siteConfig = null;
 
+  async function loadSiteContent() {
+    try {
+      const response = await fetch("/api/content", { headers: { Accept: "application/json" } });
+      const { content } = await parseResponse(response);
+      const map = { contentHeroEyebrow: "heroEyebrow", contentHeroTitle: "heroTitle", contentHeroDescription: "heroDescription", consultationTitle: "consultationTitle", contentConsultationDescription: "consultationDescription", appTitle: "appTitle", contentAppDescription: "appDescription", contentFooterText: "footerText" };
+      Object.entries(map).forEach(([id, key]) => { const element = document.querySelector(`#${id}`); if (element && content?.[key]) element.textContent = content[key]; });
+      const overrides = content?.overrides || {};
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => { const key = node.nodeValue.replace(/\s+/g, " ").trim(); if (key && Object.prototype.hasOwnProperty.call(overrides, key)) node.nodeValue = node.nodeValue.replace(key, overrides[key]); });
+      const phone = String(content?.contactPhone || "").replace(/[\s()-]/g, "");
+      if (phone) document.querySelector("#contentPhoneLink").href = `tel:${phone}`;
+    } catch { /* Keep bundled fallback content if unavailable. */ }
+  }
+
   function number(value, digits = 0) {
     return new Intl.NumberFormat("ar-JO", {
       maximumFractionDigits: digits,
@@ -651,5 +666,6 @@
   });
 
   initialize();
+  loadSiteContent();
   loadPublicApartments();
 })();

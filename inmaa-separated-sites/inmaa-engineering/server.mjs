@@ -1,6 +1,6 @@
 import http from "node:http";
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { stat, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import crypto from "node:crypto";
@@ -16,11 +16,13 @@ import {
   createSession,
   deleteApartment,
   findSession,
+  getSiteContent,
   listApartments,
   listAreaSuggestions,
   listBookings,
   removeSession,
   updateApartment,
+  updateSiteContent,
   upsertUser
 } from "./lib/database.mjs";
 
@@ -160,6 +162,35 @@ function siteConfig() {
     publicOrigin: process.env.PUBLIC_ORIGIN || "",
     adminOrigin: process.env.ADMIN_ORIGIN || ""
   };
+}
+
+const CONTENT_DEFAULTS = {
+  heroEyebrow: "قرار بناء أوضح",
+  heroTitle: "اعرف كلفة مشروعك قبل أول حجر.",
+  heroDescription: "أدخل مساحة البناء والموقع ومستوى التشطيب. تحصل فورًا على تقدير مبدئي للهيكل وللمشروع بعد التشطيب.",
+  consultationTitle: "احجز استشارة مع مهندس.",
+  consultationDescription: "راجع تقدير مشروعك مع مهندس إنماء واختر الموعد الذي يناسبك.",
+  appTitle: "حمّل تطبيق إنماء.",
+  appDescription: "تلقَّ تحديثات التقدير والحجوزات مباشرة على هاتفك عند إطلاق التطبيق.",
+  contactPhone: "+962776878079",
+  footerText: "من الفكرة إلى أرض الواقع، بأرقام أوضح وقرار أهدأ."
+};
+
+function validateSiteContent(payload) {
+  const content = {};
+  for (const [key, fallback] of Object.entries(CONTENT_DEFAULTS)) {
+    const value = String(payload?.[key] ?? fallback).trim().replace(/\s+/g, " ");
+    if (!value || value.length > 800) throw new ValidationError(`قيمة ${key} غير صالحة.`);
+    content[key] = value;
+  }
+  if (!/^\+?[0-9]{8,15}$/.test(content.contactPhone.replace(/[\s()-]/g, ""))) throw new ValidationError("أدخل رقم تواصل صالحًا.", "contactPhone");
+  content.overrides = Object.fromEntries(Object.entries(payload?.overrides || {}).filter(([key, value]) => String(key).length <= 800 && String(value).trim().length <= 800).map(([key, value]) => [String(key), String(value).trim()]));
+  return content;
+}
+
+async function publicTextCatalog() {
+  const markup = await readFile(path.join(ROOT, "apps", "public-site", "index.html"), "utf8");
+  return [...new Set([...markup.matchAll(/>([^<>]+)</g)].map((match) => match[1].replace(/\s+/g, " ").trim()).filter((text) => text.length > 1 && text.length < 800))];
 }
 
 function redirect(res, location, cookie) {
@@ -404,6 +435,35 @@ async function handleApi(req, res, pathname) {
 
   if (req.method === "GET" && pathname === "/api/site-config") {
     return sendJson(res, 200, siteConfig());
+  }
+
+  if (req.method === "GET" && pathname === "/api/content") {
+    try {
+      const stored = await getSiteContent();
+      return sendJson(res, 200, { content: { ...CONTENT_DEFAULTS, ...(stored.content || {}) }, updatedAt: stored.updated_at });
+    } catch (error) { return sendError(res, error); }
+  }
+
+  if (pathname === "/api/admin/content") {
+    const user = await requireAdmin(req, res);
+    if (!user) return;
+    try {
+      if (req.method === "GET") {
+        const stored = await getSiteContent();
+        return sendJson(res, 200, { content: { ...CONTENT_DEFAULTS, ...(stored.content || {}) }, updatedAt: stored.updated_at });
+      }
+      if (req.method === "PUT") {
+        requireCsrf(req);
+        limit(req, "admin-content-write", { max: 20 });
+        return sendJson(res, 200, { content: (await updateSiteContent(validateSiteContent(await readJsonBody(req)))).content });
+      }
+    } catch (error) { return sendError(res, error); }
+  }
+
+  if (req.method === "GET" && pathname === "/api/admin/content/catalog") {
+    const user = await requireAdmin(req, res);
+    if (!user) return;
+    try { return sendJson(res, 200, { texts: await publicTextCatalog() }); } catch (error) { return sendError(res, error); }
   }
 
   if (req.method === "GET" && pathname === "/api/areas") {

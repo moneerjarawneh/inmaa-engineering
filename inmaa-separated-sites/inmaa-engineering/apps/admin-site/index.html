@@ -31,6 +31,22 @@
         </section>
 
         <section class="admin-grid">
+          <form class="apartment-form" id="contentForm" novalidate>
+            <div class="form-heading"><div><span>موقع الزوار</span><h2>إدارة المحتوى</h2></div></div>
+            <label>عبارة أعلى الصفحة<input id="heroEyebrow" required maxlength="120" /></label>
+            <label>العنوان الرئيسي<textarea id="heroTitle" required maxlength="300"></textarea></label>
+            <label>وصف المقدمة<textarea id="heroDescription" required maxlength="800"></textarea></label>
+            <label>عنوان الاستشارة<input id="contentConsultationTitle" required maxlength="300" /></label>
+            <label>وصف الاستشارة<textarea id="contentConsultationDescription" required maxlength="800"></textarea></label>
+            <label>عنوان التطبيق<input id="contentAppTitle" required maxlength="300" /></label>
+            <label>وصف التطبيق<textarea id="contentAppDescription" required maxlength="800"></textarea></label>
+            <label>رقم التواصل<input id="contentPhone" required inputmode="tel" placeholder="+962776878079" /></label>
+            <label>نص الفوتر<textarea id="contentFooterText" required maxlength="800"></textarea></label>
+            <label>ابحث في كل نصوص الموقع<input id="contentTextSearch" placeholder="مثال: حاسبة أو تسجيل الدخول" /></label>
+            <div class="image-manager"><div><b>كل نصوص موقع الزوار</b><small>عدّل أي نص ظاهر، ثم احفظ.</small></div><div id="allTextEditors"></div></div>
+            <button class="button primary" type="submit">حفظ محتوى موقع الزوار</button>
+            <p class="status" id="contentStatus" role="status"></p>
+          </form>
           <form class="apartment-form" id="apartmentForm" novalidate>
             <div class="form-heading"><div><span id="formMode">شقة جديدة</span><h2>بيانات الشقة</h2></div><button class="text-button" id="cancelEdit" type="button" hidden>إلغاء التعديل</button></div>
             <input id="apartmentId" type="hidden" />

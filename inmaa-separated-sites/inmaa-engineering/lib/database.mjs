@@ -83,11 +83,33 @@ async function pool() {
         CREATE INDEX IF NOT EXISTS apartments_area_finish_price_idx ON apartments(area_id, finish_type, price) WHERE status = 'published';
         CREATE INDEX IF NOT EXISTS apartments_created_idx ON apartments(created_at DESC, id DESC) WHERE status = 'published';
         CREATE INDEX IF NOT EXISTS apartment_images_apartment_idx ON apartment_images(apartment_id, sort_order);
+        CREATE TABLE IF NOT EXISTS site_content (
+          id BOOLEAN PRIMARY KEY DEFAULT TRUE CHECK (id),
+          content JSONB NOT NULL DEFAULT '{}'::jsonb,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
       `);
       return client;
     });
   }
   return poolPromise;
+}
+
+export async function getSiteContent() {
+  const db = await pool();
+  const { rows } = await db.query("SELECT content, updated_at FROM site_content WHERE id = TRUE");
+  return rows[0] || { content: {}, updated_at: null };
+}
+
+export async function updateSiteContent(content) {
+  const db = await pool();
+  const { rows } = await db.query(
+    `INSERT INTO site_content (id, content) VALUES (TRUE, $1::jsonb)
+     ON CONFLICT (id) DO UPDATE SET content = EXCLUDED.content, updated_at = NOW()
+     RETURNING content, updated_at`,
+    [JSON.stringify(content)]
+  );
+  return rows[0];
 }
 
 export async function upsertUser({ provider, providerId, name, email = null, avatarUrl = null, phone = null }) {
