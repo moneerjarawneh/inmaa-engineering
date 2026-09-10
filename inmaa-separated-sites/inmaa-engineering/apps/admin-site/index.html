@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>إنماء | لوحة الإدارة</title>
+    <link rel="stylesheet" href="/admin.css" />
+    <script src="/admin.js" defer></script>
+  </head>
+  <body>
+    <header class="admin-header">
+      <a class="admin-brand" id="publicHomeLink" href="/">
+        <img src="/assets/inmaa-logo.jpg" alt="شعار إنماء" />
+        <span><b>إنماء</b><small>لوحة إدارة العقارات</small></span>
+      </a>
+      <div class="admin-account" id="adminAccount">جارٍ التحقق من الصلاحية…</div>
+    </header>
+
+    <main class="admin-main">
+      <section class="access-notice" id="accessNotice" hidden>
+        <h1>لوحة الإدارة محمية</h1>
+        <p id="accessMessage">سجّل الدخول بحساب أدمن ثم أعد فتح هذه الصفحة.</p>
+        <div class="access-actions"><a id="googleLogin" href="/api/auth/google/start" class="button primary">تسجيل الدخول عبر Google</a><a id="githubLogin" href="/api/auth/github/start" class="button secondary">الدخول عبر GitHub</a></div>
+      </section>
+
+      <div id="adminWorkspace" hidden>
+        <section class="page-intro">
+          <div><span>إدارة الشقق</span><h1>أضف، عدّل وانشر<br />العقارات بسهولة.</h1></div>
+          <button class="button primary" type="button" id="newApartment">+ إضافة شقة</button>
+        </section>
+
+        <section class="admin-grid">
+          <form class="apartment-form" id="apartmentForm" novalidate>
+            <div class="form-heading"><div><span id="formMode">شقة جديدة</span><h2>بيانات الشقة</h2></div><button class="text-button" id="cancelEdit" type="button" hidden>إلغاء التعديل</button></div>
+            <input id="apartmentId" type="hidden" />
+            <label>عنوان الإعلان<input id="title" required maxlength="160" placeholder="شقة للبيع في خلدا" /></label>
+            <label>المنطقة<input id="area" required maxlength="100" list="areaSuggestions" autocomplete="off" placeholder="خلدا" /><datalist id="areaSuggestions"></datalist></label>
+            <div class="split-fields">
+              <label>نوع التشطيب<select id="finishType" required><option value="super">Super</option><option value="super_deluxe">Super Deluxe</option><option value="vip">VIP</option></select></label>
+              <label>حالة الإعلان<select id="status"><option value="published">منشور</option><option value="draft">مسودة</option></select></label>
+            </div>
+            <div class="triple-fields">
+              <label>السعر (د.أ)<input id="price" type="number" min="1" step="1" required /></label>
+              <label>المساحة م²<input id="areaSqm" type="number" min="1" step="0.1" required /></label>
+              <label>الطابق<input id="floor" type="number" min="-10" max="300" /></label>
+            </div>
+            <div class="split-fields">
+              <label>غرف النوم<input id="bedrooms" type="number" min="0" max="30" value="2" required /></label>
+              <label>الحمامات<input id="bathrooms" type="number" min="0" max="30" value="2" required /></label>
+            </div>
+            <label>الوصف<textarea id="description" maxlength="4000" placeholder="تفاصيل الشقة ومميزاتها…"></textarea></label>
+            <div class="image-manager">
+              <div><b>صور الشقة</b><small>حتى 12 صورة · JPG/PNG/WebP · حد 8MB للصورة</small></div>
+              <input id="imageFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+              <div class="image-preview-list" id="imagePreviewList"></div>
+            </div>
+            <button class="button primary" type="submit" id="saveApartment">حفظ الشقة</button>
+            <p class="status" id="formStatus" role="status"></p>
+          </form>
+
+          <section class="listing-panel">
+            <div class="listing-heading"><div><span>العقارات</span><h2>جميع الشقق</h2></div><div class="filters"><input id="adminAreaFilter" placeholder="المنطقة" /><select id="adminFinishFilter"><option value="">كل التشطيبات</option><option value="super">Super</option><option value="super_deluxe">Super Deluxe</option><option value="vip">VIP</option></select></div></div>
+            <div class="admin-list" id="adminApartmentList"></div>
+            <button class="button secondary" id="loadMore" type="button" hidden>تحميل المزيد</button>
+          </section>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
