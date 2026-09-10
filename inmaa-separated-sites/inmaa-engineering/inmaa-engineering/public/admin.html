@@ -10,7 +10,7 @@
   </head>
   <body>
     <header class="admin-header">
-      <a class="admin-brand" id="publicHomeLink" href="/">
+      <a class="admin-brand" href="/">
         <img src="/assets/inmaa-logo.jpg" alt="شعار إنماء" />
         <span><b>إنماء</b><small>لوحة إدارة العقارات</small></span>
       </a>
@@ -21,7 +21,7 @@
       <section class="access-notice" id="accessNotice" hidden>
         <h1>لوحة الإدارة محمية</h1>
         <p id="accessMessage">سجّل الدخول بحساب أدمن ثم أعد فتح هذه الصفحة.</p>
-        <div class="access-actions"><a id="googleLogin" href="/api/auth/google/start" class="button primary">تسجيل الدخول عبر Google</a><a id="githubLogin" href="/api/auth/github/start" class="button secondary">الدخول عبر GitHub</a></div>
+        <a href="/" class="button primary">الذهاب إلى تسجيل الدخول</a>
       </section>
 
       <div id="adminWorkspace" hidden>
@@ -31,24 +31,6 @@
         </section>
 
         <section class="admin-grid">
-          <form class="apartment-form" id="contentForm" novalidate>
-            <div class="form-heading"><div><span>موقع الزوار</span><h2>إدارة المحتوى</h2></div></div>
-            <label>عبارة أعلى الصفحة<input id="heroEyebrow" required maxlength="120" /></label>
-            <label>العنوان الرئيسي<textarea id="heroTitle" required maxlength="300"></textarea></label>
-            <label>وصف المقدمة<textarea id="heroDescription" required maxlength="800"></textarea></label>
-            <label>عنوان الاستشارة<input id="contentConsultationTitle" required maxlength="300" /></label>
-            <label>وصف الاستشارة<textarea id="contentConsultationDescription" required maxlength="800"></textarea></label>
-            <label>عنوان التطبيق<input id="contentAppTitle" required maxlength="300" /></label>
-            <label>وصف التطبيق<textarea id="contentAppDescription" required maxlength="800"></textarea></label>
-            <label>رقم التواصل<input id="contentPhone" required inputmode="tel" placeholder="+962776878079" /></label>
-            <label>نص الفوتر<textarea id="contentFooterText" required maxlength="800"></textarea></label>
-            <div class="triple-fields"><label>سعر العظم/م²<input id="shellRate" type="number" min="1" required /></label><label>ديلوكس/م²<input id="deluxeRate" type="number" min="1" required /></label><label>سوبر ديلوكس/م²<input id="superDeluxeRate" type="number" min="1" required /></label></div>
-            <label>VIP/م²<input id="vipRate" type="number" min="1" required /></label>
-            <label>ابحث في كل نصوص الموقع<input id="contentTextSearch" placeholder="مثال: حاسبة أو تسجيل الدخول" /></label>
-            <div class="image-manager"><div><b>كل نصوص موقع الزوار</b><small>عدّل أي نص ظاهر، ثم احفظ.</small></div><div id="allTextEditors"></div></div>
-            <button class="button primary" type="submit">حفظ محتوى موقع الزوار</button>
-            <p class="status" id="contentStatus" role="status"></p>
-          </form>
           <form class="apartment-form" id="apartmentForm" novalidate>
             <div class="form-heading"><div><span id="formMode">شقة جديدة</span><h2>بيانات الشقة</h2></div><button class="text-button" id="cancelEdit" type="button" hidden>إلغاء التعديل</button></div>
             <input id="apartmentId" type="hidden" />
