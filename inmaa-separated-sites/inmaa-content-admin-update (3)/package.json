@@ -1,0 +1,18 @@
+{
+  "name": "inmaa-engineering-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "منصة إنماء لتقدير تكاليف البناء والمعاينة ثلاثية الأبعاد",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

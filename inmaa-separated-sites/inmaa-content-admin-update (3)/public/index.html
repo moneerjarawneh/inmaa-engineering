@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="منصة إنماء لتقدير تكلفة البناء قبل التشطيب وبعده ومعاينة كتلة المبنى ثلاثية الأبعاد."
+    />
+    <meta name="theme-color" content="#0b0906" />
+    <title>إنماء | تقدير تكلفة البناء</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/visualizer.js" defer></script>
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#calculator">انتقل إلى حاسبة التكلفة</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="إنماء - الصفحة الرئيسية">
+        <img class="brand-logo" src="/assets/inmaa-logo.jpg" alt="شعار إنماء للخدمات الهندسية والمساحية" />
+        <span class="brand-copy">
+          <strong>إنماء</strong>
+          <small>للخدمات الهندسية والمساحية</small>
+        </span>
+      </a>
+      <nav aria-label="التنقل الرئيسي">
+        <a href="#calculator">التكلفة</a>
+        <a href="#apartments">الشقق</a>
+        <a href="#consultation">استشارة</a>
+        <a href="#bookings">حجوزاتي</a>
+        <a href="#assistant">المساعد</a>
+        <a href="#app-download">التطبيق</a>
+      </nav>
+      <div class="header-actions">
+        <button class="header-action header-action-button" id="openAssistant" type="button">اسأل المساعد</button>
+        <button class="header-action header-action-button" id="openAuth" type="button">دخول / إنشاء حساب</button>
+        <div class="account-actions" id="accountActions" hidden>
+          <span class="account-name" id="accountName">—</span>
+          <a class="header-action" id="adminLink" href="/admin.html" hidden>الإدارة</a>
+          <button class="header-action header-action-button" id="signOut" type="button">تسجيل الخروج</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="estimator-shell" id="calculator" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <div class="eyebrow"><span></span> قرار بناء أوضح</div>
+          <h1 id="page-title">اعرف كلفة مشروعك<br /><em>قبل أول حجر.</em></h1>
+          <p>
+            أدخل مساحة البناء والموقع ومستوى التشطيب. تحصل فورًا على تقدير مبدئي
+            للهيكل وللمشروع بعد التشطيب، محسوب من الأسعار المعتمدة في الخادم.
+          </p>
+          <div class="intro-facts service-shortcuts" aria-label="خدمات إنماء">
+            <a href="#calculator"><b>01</b> حاسبة التكلفة</a>
+            <a href="#consultation"><b>02</b> احجز استشارة</a>
+            <a href="#bookings"><b>03</b> حجوزاتي</a>
+          </div>
+        </div>
+
+        <div class="calculator-grid">
+          <form class="calculator-card" id="estimateForm" novalidate>
+            <div class="card-heading">
+              <div>
+                <span class="step-number">01</span>
+                <h2>بيانات المشروع</h2>
+              </div>
+              <span class="secure-note"><i></i> حساب من الخادم</span>
+            </div>
+
+            <div class="form-grid">
+              <label class="field field-wide" for="area">
+                <span>مساحة البناء الإجمالية</span>
+                <span class="input-with-unit">
+                  <input
+                    id="area"
+                    name="area"
+                    type="text"
+                    pattern="[0-9٠-٩۰-۹., ]+"
+                    value="240"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    required
+                  />
+                  <b>م²</b>
+                </span>
+                <small>إجمالي مساحة جميع الطوابق</small>
+              </label>
+
+              <label class="field" for="location">
+                <span>المحافظة</span>
+                <span class="select-wrap">
+                  <select id="location" name="location" required aria-busy="true">
+                    <option value="">جارٍ تحميل المواقع…</option>
+                  </select>
+                </span>
+              </label>
+
+              <label class="field" for="address">
+                <span>موقع البناء</span>
+                <span class="location-input-row">
+                  <input
+                    id="address"
+                    name="address"
+                    type="text"
+                    minlength="3"
+                    maxlength="180"
+                    value="موقع مبدئي"
+                    placeholder="الحي، الشارع أو رقم القطعة"
+                    autocomplete="street-address"
+                    required
+                  />
+                  <button class="location-button" id="useCurrentLocation" type="button">تحديد موقعي الحالي</button>
+                </span>
+              </label>
+
+              <div class="field field-wide range-field">
+                <div class="label-row">
+                  <label for="floors">عدد الطوابق</label>
+                  <output id="floorsOutput" for="floors">2 طابق</output>
+                </div>
+                <input id="floors" name="floors" type="range" min="1" max="12" value="2" step="1" />
+                <div class="range-scale" aria-hidden="true"><span>1</span><span>6</span><span>12</span></div>
+              </div>
+            </div>
+
+            <fieldset class="choice-field finish-choices">
+              <legend>مستوى التشطيب</legend>
+              <div class="radio-card-grid">
+                <label class="radio-card">
+                  <input type="radio" name="finishLevel" value="economy" />
+                  <span><b>اقتصادي</b><small id="economyRate">—</small></span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="finishLevel" value="standard" checked />
+                  <span><b>قياسي</b><small id="standardRate">—</small></span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="finishLevel" value="premium" />
+                  <span><b>فاخر</b><small id="premiumRate">—</small></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset class="choice-field stone-choice">
+              <div class="legend-row">
+                <legend>كم واجهة حجر؟</legend>
+                <span>تضاف إلى كلفة التشطيب</span>
+              </div>
+              <div class="segment-control" aria-label="عدد واجهات الحجر">
+                <label><input type="radio" name="stoneFacades" value="0" /><span>بدون</span></label>
+                <label><input type="radio" name="stoneFacades" value="1" /><span>1</span></label>
+                <label><input type="radio" name="stoneFacades" value="2" checked /><span>2</span></label>
+                <label><input type="radio" name="stoneFacades" value="3" /><span>3</span></label>
+                <label><input type="radio" name="stoneFacades" value="4" /><span>4</span></label>
+              </div>
+            </fieldset>
+
+            <button class="primary-button" type="submit">
+              <span>احسب التكلفة الآن</span>
+              <span aria-hidden="true">←</span>
+            </button>
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          </form>
+
+          <aside class="result-card" aria-labelledby="resultTitle" aria-live="polite">
+            <div class="result-topline">
+              <div>
+                <span class="step-number">02</span>
+                <h2 id="resultTitle">التقدير الأولي</h2>
+              </div>
+              <span class="result-location" id="resultLocation">—</span>
+            </div>
+
+            <div class="price-block shell-price">
+              <div class="price-label">
+                <span>قبل التشطيب</span>
+                <small>الهيكل الإنشائي</small>
+              </div>
+              <div class="price-value is-loading" id="shellPrice">—</div>
+              <div class="price-range" id="shellRange">النطاق التقديري: —</div>
+            </div>
+
+            <div class="price-divider"><span>ثم</span></div>
+
+            <div class="price-block finished-price">
+              <div class="price-label">
+                <span>بعد التشطيب</span>
+                <small id="finishLabel">تشطيب قياسي</small>
+              </div>
+              <div class="price-value gold is-loading" id="finishedPrice">—</div>
+              <div class="price-range" id="finishedRange">النطاق التقديري: —</div>
+            </div>
+
+            <dl class="breakdown-list">
+              <div><dt>سعر الهيكل / م²</dt><dd id="shellRate">—</dd></div>
+              <div><dt>سعر التشطيب / م²</dt><dd id="finishedRate">—</dd></div>
+              <div><dt>مساحة الحجر المقدرة</dt><dd id="stoneArea">—</dd></div>
+              <div><dt>إضافة واجهات الحجر</dt><dd id="stoneCost">—</dd></div>
+            </dl>
+
+            <p class="estimate-note" id="estimateNote">
+              التقدير إرشادي ويتأكد بعد دراسة المخطط وطبيعة الأرض.
+            </p>
+            <button class="secondary-button" id="openRequest" type="button" disabled>
+              اطلب مراجعة مهندس
+            </button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="service-section apartments-section" id="apartments" aria-labelledby="apartmentsTitle">
+        <div class="section-heading">
+          <span class="eyebrow"><span></span> عقارات متاحة</span>
+          <h2 id="apartmentsTitle">ابحث عن شقة<br /><em>تناسبك.</em></h2>
+          <p>اكتب اسم المنطقة واختر مستوى التشطيب لتظهر لك الشقق المنشورة من لوحة إنماء.</p>
+        </div>
+        <div class="service-card apartment-search-card">
+          <form class="apartment-search-form" id="apartmentSearchForm">
+            <label class="field" for="apartmentAreaSearch"><span>المنطقة</span><input id="apartmentAreaSearch" list="publicAreaSuggestions" autocomplete="off" placeholder="مثال: خلدا أو عبدون" /><datalist id="publicAreaSuggestions"></datalist></label>
+            <label class="field" for="apartmentFinishSearch"><span>نوع التشطيب</span><select id="apartmentFinishSearch"><option value="">كل التشطيبات</option><option value="super">Super</option><option value="super_deluxe">Super Deluxe</option><option value="vip">VIP</option></select></label>
+            <button class="primary-button" type="submit">ابحث عن الشقق</button>
+          </form>
+          <div class="public-apartment-list" id="publicApartmentList" aria-live="polite"></div>
+          <button class="secondary-button" id="loadMoreApartments" type="button" hidden>عرض المزيد</button>
+        </div>
+      </section>
+
+      <section class="visualization-section" id="visualization" aria-labelledby="visualizationTitle">
+        <div class="section-copy">
+          <div class="eyebrow"><span></span> قبل التنفيذ</div>
+          <h2 id="visualizationTitle">شاهد كتلة البناء<br /><em>من كل زاوية.</em></h2>
+          <p>
+            نموذج تصوري أولي يتغير تلقائيًا مع مساحة المشروع وعدد الطوابق وواجهات الحجر.
+            اسحب لتدوير المبنى واستخدم أدوات التقريب لاستكشافه.
+          </p>
+          <div class="model-specs" aria-label="مواصفات النموذج">
+            <div><small>أبعاد البصمة</small><b id="footprintSpec">—</b></div>
+            <div><small>الارتفاع المقدر</small><b id="heightSpec">—</b></div>
+            <div><small>واجهات الحجر</small><b id="facadesSpec">2</b></div>
+          </div>
+          <p class="model-disclaimer">المعاينة كتلية وليست مخططًا معماريًا تنفيذيًا.</p>
+        </div>
+
+        <div class="viewer-card">
+          <div class="viewer-header">
+            <div>
+              <span class="live-dot"></span>
+              <b>نموذج المشروع</b>
+            </div>
+            <span id="viewerCaption">240 م² · طابقان</span>
+          </div>
+          <div class="canvas-wrap">
+            <canvas
+              id="buildingCanvas"
+              role="img"
+              aria-label="معاينة ثلاثية الأبعاد لكتلة المبنى وواجهات الحجر"
+            >
+              متصفحك لا يدعم المعاينة ثلاثية الأبعاد.
+            </canvas>
+            <div class="canvas-badge"><span></span> الحجر الطبيعي</div>
+            <div class="orientation" aria-hidden="true"><i></i><b>شمال</b></div>
+          </div>
+          <div class="viewer-toolbar" aria-label="أدوات المعاينة">
+            <button type="button" data-view-action="zoom-out" aria-label="تصغير">−</button>
+            <button type="button" data-view-action="reset">إعادة الضبط</button>
+            <button type="button" data-view-action="rotate">تدوير تلقائي</button>
+            <button type="button" data-view-action="zoom-in" aria-label="تكبير">+</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="service-section consultation-section" id="consultation" aria-labelledby="consultationTitle">
+        <div class="section-heading">
+          <span class="eyebrow"><span></span> خدمة مستقلة</span>
+          <h2 id="consultationTitle">احجز استشارة<br /><em>مع مهندس.</em></h2>
+          <p>راجع تقدير مشروعك مع مهندس إنماء واختر الموعد الذي يناسبك. هذه الخدمة متاحة للحسابات المسجلة فقط.</p>
+        </div>
+        <div class="service-card login-gated-card">
+          <span class="service-icon">⌁</span>
+          <h3>حجز استشارة هندسية</h3>
+          <p id="consultationMessage">سجّل دخولك أولًا ثم احسب تقدير المشروع لفتح نموذج الحجز.</p>
+          <button class="primary-button" id="consultationAction" type="button">سجّل الدخول للحجز</button>
+        </div>
+      </section>
+
+      <section class="service-section bookings-section" id="bookings" aria-labelledby="bookingsTitle">
+        <div class="section-heading">
+          <span class="eyebrow"><span></span> مساحة خاصة</span>
+          <h2 id="bookingsTitle">حجوزاتي<br /><em>بخصوصية.</em></h2>
+          <p>لا تظهر هنا إلا الحجوزات المرتبطة بحسابك المسجّل.</p>
+        </div>
+        <div class="service-card bookings-card">
+          <div id="bookingsLocked">
+            <span class="service-icon">⌑</span>
+            <h3>سجّل الدخول لعرض حجوزاتك</h3>
+            <p>لن يستطيع أي زائر رؤية حجوزات مستخدم آخر.</p>
+            <button class="secondary-button" id="bookingsLogin" type="button">تسجيل الدخول</button>
+          </div>
+          <div id="bookingsContent" hidden>
+            <div class="bookings-topline"><h3>الحجوزات السابقة والقادمة</h3><button class="text-button" id="refreshBookings" type="button">تحديث</button></div>
+            <div class="booking-list" id="bookingList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="service-section assistant-section" id="assistant" aria-labelledby="assistantServiceTitle">
+        <div class="section-heading">
+          <span class="eyebrow"><span></span> مساعدة فورية</span>
+          <h2 id="assistantServiceTitle">اسأل مساعد<br /><em>إنماء.</em></h2>
+          <p>أسئلة سريعة حول التقدير ومراحل المشروع، مع تذكير دائم بأن القرار التنفيذي لدى المهندس.</p>
+        </div>
+        <div class="service-card">
+          <span class="service-icon">✦</span>
+          <h3>مساعد إنماء المدعوم بالذكاء الاصطناعي</h3>
+          <p>احصل على شرح فوري للتقدير الحالي أو للمصطلحات الإنشائية.</p>
+          <button class="primary-button" id="assistantServiceAction" type="button">ابدأ المحادثة</button>
+        </div>
+      </section>
+
+      <section class="service-section app-section" id="app-download" aria-labelledby="appTitle">
+        <div class="section-heading">
+          <span class="eyebrow"><span></span> قريبًا على هاتفك</span>
+          <h2 id="appTitle">حمّل تطبيق<br /><em>إنماء.</em></h2>
+          <p>تلقَّ تحديثات التقدير والحجوزات مباشرة على هاتفك عند إطلاق التطبيق.</p>
+        </div>
+        <div class="service-card app-card">
+          <span class="service-icon">⇩</span>
+          <h3>تطبيق إنماء</h3>
+          <p>سجّل اهتمامك لنرسل لك رابط التحميل فور توفر التطبيق.</p>
+          <a class="primary-button" href="tel:+962776878079">تواصل لإطلاق التطبيق</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-brand">
+        <img class="brand-logo" src="/assets/inmaa-logo.jpg" alt="شعار إنماء" />
+        <div><b>إنماء</b><small>للخدمات الهندسية والمساحية</small></div>
+      </div>
+      <p>من الفكرة إلى أرض الواقع، بأرقام أوضح وقرار أهدأ.</p>
+      <a href="#top">العودة للأعلى ↑</a>
+    </footer>
+
+    <dialog id="requestDialog" aria-labelledby="requestTitle">
+      <div class="dialog-shell">
+        <button class="dialog-close" type="button" data-close-dialog aria-label="إغلاق">×</button>
+        <div id="requestFormWrap">
+          <span class="dialog-kicker">خطوة أخيرة</span>
+          <h2 id="requestTitle">دع مهندس إنماء يراجع تقديرك</h2>
+          <p>حجزك مرتبط بحسابك فقط. سيظهر لك الرقم المرجعي فورًا ويمكنك مراجعته من قسم «حجوزاتي».</p>
+          <form id="requestForm" novalidate>
+            <label class="field" for="appointmentAt">
+              <span>الموعد المفضّل <small>(اختياري)</small></span>
+              <input id="appointmentAt" name="appointmentAt" type="datetime-local" />
+            </label>
+            <label class="field field-wide" for="bookingNote"><span>ملاحظاتك للمهندس <small>(اختياري)</small></span><textarea id="bookingNote" name="note" maxlength="1000" placeholder="مثال: أرغب بمراجعة مخطط طابقين…"></textarea></label>
+            <button class="primary-button" type="submit">حفظ وإرسال الطلب</button>
+            <p class="form-status" id="requestStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <div class="request-success" id="requestSuccess" hidden>
+          <span class="success-icon" aria-hidden="true">✓</span>
+          <h2>تم استلام طلبك</h2>
+          <p>احتفظ بالرقم المرجعي عند التواصل مع إنماء.</p>
+          <strong id="requestReference" dir="ltr">—</strong>
+          <button class="secondary-button" type="button" data-close-dialog>إغلاق</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="authDialog" aria-labelledby="authTitle">
+      <div class="dialog-shell auth-shell">
+        <button class="dialog-close" type="button" data-close-auth aria-label="إغلاق">×</button>
+        <span class="dialog-kicker">حساب إنماء</span>
+        <h2 id="authTitle">سجّل دخولك أو أنشئ حسابًا</h2>
+        <p class="auth-intro">يمكنك إنشاء حسابك بسرعة عبر Google أو رقم هاتفك. سنحفظ فقط ما يلزم لخدمتك.</p>
+        <div class="auth-provider-list">
+          <button class="auth-provider google-provider" id="googleAuth" type="button">
+            <span class="provider-mark" aria-hidden="true">G</span>
+            <span><b>المتابعة عبر Google</b><small>باستخدام Gmail</small></span>
+          </button>
+          <button class="auth-provider github-provider" id="githubAuth" type="button">
+            <span class="provider-mark github-mark" aria-hidden="true">⌘</span>
+            <span><b>المتابعة عبر GitHub</b><small>باستخدام حساب GitHub</small></span>
+          </button>
+          <div class="phone-auth">
+            <label class="field" for="authPhone">
+              <span>رقم الهاتف</span>
+              <input id="authPhone" type="tel" dir="ltr" inputmode="tel" autocomplete="tel" placeholder="+962 7…" />
+            </label>
+            <button class="secondary-button" id="sendPhoneCode" type="button">إرسال رمز التحقق</button>
+            <div class="phone-code-row" id="phoneCodeRow" hidden>
+              <label class="field" for="phoneCode">
+                <span>رمز التحقق</span>
+                <input id="phoneCode" type="text" dir="ltr" inputmode="numeric" autocomplete="one-time-code" maxlength="10" />
+              </label>
+              <button class="primary-button" id="verifyPhoneCode" type="button">تأكيد الرقم</button>
+            </div>
+          </div>
+        </div>
+        <p class="form-status" id="authStatus" role="status" aria-live="polite"></p>
+      </div>
+    </dialog>
+
+    <dialog id="assistantDialog" aria-labelledby="assistantTitle">
+      <div class="dialog-shell assistant-shell">
+        <button class="dialog-close" type="button" data-close-assistant aria-label="إغلاق">×</button>
+        <span class="dialog-kicker">مساعد إنماء</span>
+        <h2 id="assistantTitle">اسأل عن مشروعك</h2>
+        <p>مساعد مبني على OpenAI لمساعدتك في فهم التقدير، وليس بديلًا عن مراجعة مهندس.</p>
+        <div class="assistant-messages" id="assistantMessages" aria-live="polite">
+          <p class="assistant-welcome">مرحبًا، كيف أساعدك في مشروع البناء؟</p>
+        </div>
+        <form class="assistant-form" id="assistantForm">
+          <label class="sr-only" for="assistantInput">رسالتك</label>
+          <textarea id="assistantInput" maxlength="2000" placeholder="اكتب سؤالك هنا…" required></textarea>
+          <button class="primary-button" type="submit">إرسال</button>
+        </form>
+        <p class="form-status" id="assistantStatus" role="status" aria-live="polite"></p>
+      </div>
+    </dialog>
+  </body>
+</html>

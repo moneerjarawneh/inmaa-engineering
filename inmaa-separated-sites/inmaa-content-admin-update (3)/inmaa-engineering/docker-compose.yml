@@ -1,0 +1,36 @@
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: inmaa
+      POSTGRES_USER: inmaa
+      POSTGRES_PASSWORD: change-this-local-password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  public-site:
+    build: .
+    depends_on: [database]
+    ports: ["3000:3000"]
+    environment:
+      PORT: 3000
+      SITE_ROLE: public
+      APP_ORIGIN: http://localhost:3000
+      PUBLIC_ORIGIN: http://localhost:3000
+      ADMIN_ORIGIN: http://localhost:3001
+      DATABASE_URL: postgresql://inmaa:change-this-local-password@database:5432/inmaa
+
+  admin-site:
+    build: .
+    depends_on: [database]
+    ports: ["3001:3000"]
+    environment:
+      PORT: 3000
+      SITE_ROLE: admin
+      APP_ORIGIN: http://localhost:3001
+      PUBLIC_ORIGIN: http://localhost:3000
+      ADMIN_ORIGIN: http://localhost:3001
+      DATABASE_URL: postgresql://inmaa:change-this-local-password@database:5432/inmaa
+
+volumes:
+  postgres_data:
